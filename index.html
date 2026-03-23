@@ -2,107 +2,119 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MoonTeam - Minecraft Skins Gallery</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Галерея</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
             background: #0a0a0a;
             color: #e0e0e0;
             padding: 40px 20px;
         }
-        
+
         .container {
-            max-width: 1400px;
+            max-width: 1200px;
             margin: 0 auto;
         }
-        
-        h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-            border-left: 4px solid #ff4757;
-            padding-left: 20px;
+
+        /* Верхняя навигация */
+        .top-nav {
+            margin-bottom: 30px;
         }
-        
-        .subtitle {
-            color: #888;
-            margin-bottom: 40px;
-            padding-left: 24px;
-        }
-        
-        /* Папки */
-        .folder-section {
-            margin-bottom: 50px;
-        }
-        
-        .folder-title {
-            font-size: 1.8rem;
-            margin-bottom: 20px;
-            background: #1a1a1a;
-            display: inline-block;
-            padding: 8px 20px;
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: #ff4757;
+            text-decoration: none;
+            font-size: 1rem;
+            font-weight: 500;
+            background: rgba(255, 71, 87, 0.1);
+            padding: 8px 16px;
             border-radius: 30px;
-            border-left: 3px solid #ff4757;
+            transition: background 0.2s;
         }
-        
+
+        .back-link:hover {
+            background: rgba(255, 71, 87, 0.2);
+        }
+
+        /* Заголовок */
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 30px;
+            font-weight: 600;
+            letter-spacing: -0.3px;
+        }
+
+        /* Сетка галереи (для папок и файлов) */
         .gallery {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 24px;
         }
-        
-        .skin-card {
+
+        /* Карточка (папка или скин) */
+        .item-card {
             background: #1a1a1a;
-            border-radius: 12px;
+            border-radius: 16px;
             overflow: hidden;
-            transition: transform 0.3s, box-shadow 0.3s;
+            transition: transform 0.2s, box-shadow 0.2s;
             cursor: pointer;
             text-align: center;
+            border: 1px solid #2a2a2a;
         }
-        
-        .skin-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+
+        .item-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 20px rgba(0,0,0,0.4);
+            border-color: #ff4757;
         }
-        
+
+        /* Иконка/превью */
+        .item-preview {
+            padding: 24px 16px;
+            background: #111;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 140px;
+        }
+
+        .folder-icon {
+            font-size: 64px;
+            filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.5));
+        }
+
         .skin-preview {
-            background: #2a2a2a;
-            padding: 20px;
-            position: relative;
-        }
-        
-        .skin-preview img {
             width: 100%;
-            max-width: 150px;
+            max-width: 120px;
             height: auto;
-            display: block;
-            margin: 0 auto;
             image-rendering: pixelated;
             image-rendering: crisp-edges;
+            display: block;
+            margin: 0 auto;
         }
-        
-        /* 3D вид для скинов (опционально) */
-        .skin-3d {
-            width: 100%;
-            height: 180px;
-            object-fit: contain;
-        }
-        
-        .skin-name {
-            padding: 12px 15px;
+
+        /* Имя элемента */
+        .item-name {
+            padding: 14px 10px;
             font-weight: 500;
             font-size: 14px;
-            background: #1e1e1e;
+            background: #1a1a1a;
+            border-top: 1px solid #2a2a2a;
             word-break: break-word;
+            color: #ddd;
         }
-        
-        /* Модальное окно */
+
+        /* Модальное окно для скина */
         .modal {
             display: none;
             position: fixed;
@@ -110,206 +122,281 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.95);
+            background: rgba(0,0,0,0.94);
             z-index: 1000;
             justify-content: center;
             align-items: center;
             cursor: pointer;
         }
-        
+
         .modal.active {
             display: flex;
         }
-        
+
         .modal-content {
-            background: #1a1a1a;
-            border-radius: 16px;
+            background: #1e1e1e;
+            border-radius: 20px;
             padding: 20px;
-            max-width: 90%;
-            max-height: 90%;
+            max-width: 90vw;
+            max-height: 90vh;
             text-align: center;
             cursor: default;
+            box-shadow: 0 20px 35px rgba(0,0,0,0.5);
         }
-        
+
         .modal img {
             max-width: 100%;
-            max-height: 70vh;
-            border-radius: 8px;
+            max-height: 65vh;
+            border-radius: 12px;
             image-rendering: pixelated;
         }
-        
-        .modal .skin-name {
-            margin-top: 15px;
-            font-size: 18px;
-            background: transparent;
+
+        .modal-skin-name {
+            margin: 18px 0 12px;
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: #fff;
         }
-        
+
         .modal-buttons {
-            margin-top: 15px;
             display: flex;
-            gap: 10px;
+            gap: 12px;
             justify-content: center;
+            margin-top: 8px;
         }
-        
+
         .modal-btn {
             background: #333;
             color: white;
-            padding: 8px 20px;
-            border-radius: 30px;
+            padding: 8px 22px;
+            border-radius: 40px;
             font-size: 14px;
             cursor: pointer;
-            transition: background 0.3s;
+            transition: background 0.2s;
             border: none;
+            font-family: inherit;
+            font-weight: 500;
         }
-        
+
         .modal-btn:hover {
             background: #ff4757;
         }
-        
-        @media (max-width: 600px) {
+
+        /* Адаптивность */
+        @media (max-width: 550px) {
+            body { padding: 20px 12px; }
             h1 { font-size: 1.8rem; }
-            .folder-title { font-size: 1.3rem; }
-            .gallery { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
-            .skin-name { font-size: 11px; }
+            .gallery { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 16px; }
+            .item-name { font-size: 12px; padding: 10px 6px; }
+            .folder-icon { font-size: 48px; }
+            .skin-preview { max-width: 90px; }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>🎮 MoonTeam Галерея</h1>
-        <div class="subtitle">Minecraft скины и текстуры</div>
-        <div id="gallery-container"></div>
-    </div>
-    
-    <div class="modal" id="modal" onclick="closeModal()">
-        <div class="modal-content" onclick="event.stopPropagation()">
-            <img id="modalImage" src="" alt="">
-            <div class="skin-name" id="modalSkinName"></div>
-            <div class="modal-buttons">
-                <button class="modal-btn" onclick="copyUrl()">📋 Copy URL</button>
-                <button class="modal-btn" onclick="downloadSkin()">⬇️ Download</button>
-            </div>
+
+<div class="container">
+    <!-- Верхняя панель: "Назад" появляется только когда мы внутри папки -->
+    <div class="top-nav" id="topNav"></div>
+
+    <!-- Заголовок -->
+    <h1 id="pageTitle">Галерея</h1>
+
+    <!-- Сетка с содержимым -->
+    <div id="galleryContainer" class="gallery"></div>
+</div>
+
+<!-- Модальное окно для просмотра скина -->
+<div class="modal" id="skinModal" onclick="closeModal()">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <img id="modalImage" src="" alt="">
+        <div class="modal-skin-name" id="modalSkinName"></div>
+        <div class="modal-buttons">
+            <button class="modal-btn" id="copyUrlBtn">Копировать URL</button>
+            <button class="modal-btn" id="downloadSkinBtn">Скачать</button>
         </div>
     </div>
+</div>
 
-    <script>
-        // Структура папок и скинов
-        const skinFolders = {
-            "Back_in_The_past": [
-                { name: "Nikita_obichniy", file: "Nikita_obichniy.png" }
-            ]
-        };
-        
-        // Другие папки из вашего списка (добавьте когда будут файлы)
-        const otherFolders = [
-            "Additional Skins",
-            "Additional_Skins2", 
-            "Animals",
-            "Dog_sledding",
-            "Genshin",
-            "Grandpa_Loner",
-            "Manyak",
-            "Nuckems",
-            "Otec",
-            "Pitbike",
-            "Pitbike2Petya",
-            "Poverty",
-            "Tank_survival",
-            "The_train_with_the_hook",
-            "The_unexpected_President",
-            "Undead_Hunters"
-        ];
-        
-        // Функция для получения URL скина
-        function getSkinUrl(folder, filename) {
-            return `https://moonteam.github.io/${folder}/${filename}`;
+<script>
+    // ---------- СТРУКТУРА ДАННЫХ ----------
+    // У нас есть только одна папка "Back_in_The past" с одним скином.
+    // Формат: имя папки -> массив объектов { name: "отображаемое имя", file: "имя_файла.png" }
+    const folderContents = {
+        "Back_in_The past": [
+            { name: "Nikita_obichniy", file: "Nikita_obichniy.png" }
+        ]
+    };
+
+    // Все папки (для навигации)
+    const allFolders = Object.keys(folderContents); // ["Back_in_The past"]
+
+    // Текущее состояние: где мы находимся
+    // null = корень (показываем список папок)
+    // "ИмяПапки" = внутри папки
+    let currentFolder = null;
+
+    // Базовый URL сайта (автоматически определится)
+    const baseUrl = window.location.origin + window.location.pathname.replace(/\/$/, '');
+
+    // Функция получения полного URL к скину
+    function getSkinUrl(folderName, fileName) {
+        // Кодируем имена, чтобы избежать проблем с пробелами и спецсимволами
+        const encodedFolder = encodeURIComponent(folderName);
+        const encodedFile = encodeURIComponent(fileName);
+        return `${baseUrl}/${encodedFolder}/${encodedFile}`;
+    }
+
+    // Рендер навигации и контента
+    function render() {
+        const topNavDiv = document.getElementById('topNav');
+        const titleEl = document.getElementById('pageTitle');
+        const galleryDiv = document.getElementById('galleryContainer');
+
+        // Очищаем
+        galleryDiv.innerHTML = '';
+
+        // --- Верхняя панель: кнопка "Назад" если мы внутри папки ---
+        if (currentFolder !== null) {
+            topNavDiv.innerHTML = `
+                <div class="back-link" id="backButton">
+                    ← Назад
+                </div>
+            `;
+            const backBtn = document.getElementById('backButton');
+            if (backBtn) {
+                backBtn.addEventListener('click', () => {
+                    currentFolder = null;
+                    render();
+                });
+            }
+            // Заголовок: имя папки
+            titleEl.textContent = currentFolder;
+        } else {
+            topNavDiv.innerHTML = ''; // в корне нет кнопки назад
+            titleEl.textContent = 'Галерея';
         }
-        
-        // Создаем галерею
-        const container = document.getElementById('gallery-container');
-        let currentSkinUrl = '';
-        let currentSkinName = '';
-        
-        // Отображаем папки со скинами
-        for (const [folder, skins] of Object.entries(skinFolders)) {
-            if (skins.length === 0) continue;
-            
-            const folderDiv = document.createElement('div');
-            folderDiv.className = 'folder-section';
-            folderDiv.innerHTML = `<div class="folder-title">📁 ${folder.replace(/_/g, ' ')}</div><div class="gallery" id="gallery-${folder}"></div>`;
-            container.appendChild(folderDiv);
-            
-            const galleryDiv = document.getElementById(`gallery-${folder}`);
-            
+
+        // --- Отображение содержимого ---
+        if (currentFolder === null) {
+            // КОРЕНЬ: показываем все папки (в нашем случае только одну)
+            allFolders.forEach(folder => {
+                const card = document.createElement('div');
+                card.className = 'item-card';
+                card.innerHTML = `
+                    <div class="item-preview">
+                        <div class="folder-icon">📁</div>
+                    </div>
+                    <div class="item-name">${escapeHtml(folder)}</div>
+                `;
+                card.addEventListener('click', () => {
+                    currentFolder = folder;
+                    render();
+                });
+                galleryDiv.appendChild(card);
+            });
+        } else {
+            // ВНУТРИ ПАПКИ: показываем скины (файлы)
+            const skins = folderContents[currentFolder] || [];
+            if (skins.length === 0) {
+                // На случай если папка пуста
+                galleryDiv.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:40px;">Нет скинов в этой папке</div>';
+                return;
+            }
+
             skins.forEach(skin => {
                 const card = document.createElement('div');
-                card.className = 'skin-card';
-                const skinUrl = getSkinUrl(folder, skin.file);
-                
+                card.className = 'item-card';
+                const skinUrl = getSkinUrl(currentFolder, skin.file);
+                // Превью скина (сам скин)
                 card.innerHTML = `
-                    <div class="skin-preview">
-                        <img src="${skinUrl}" alt="${skin.name}" 
-                             onerror="this.src='https://via.placeholder.com/150x150?text=${encodeURIComponent(skin.name)}'">
+                    <div class="item-preview">
+                        <img class="skin-preview" src="${skinUrl}" alt="${escapeHtml(skin.name)}" 
+                             onerror="this.src='data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22120%22%20height%3D%22120%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22%23666%22%3E%3Cpath%20d%3D%22M12%202C6.48%202%202%206.48%202%2012s4.48%2010%2010%2010%2010-4.48%2010-10S17.52%202%2012%202zm0%204c1.1%200%202%20.9%202%202s-.9%202-2%202-2-.9-2-2%20.9-2%202-2zm0%2013c-2.33%200-4.31-1.46-5.11-3.5h10.22c-.8%202.04-2.78%203.5-5.11%203.5z%22%2F%3E%3C%2Fsvg%3E'">
                     </div>
-                    <div class="skin-name">${skin.name.replace(/_/g, ' ')}</div>
+                    <div class="item-name">${escapeHtml(skin.name)}</div>
                 `;
-                
-                card.onclick = () => openModal(skinUrl, skin.name);
+                card.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    openModal(skinUrl, skin.name);
+                });
                 galleryDiv.appendChild(card);
             });
         }
-        
-        // Добавляем пустые папки как заглушки
-        if (otherFolders.length > 0) {
-            const otherSection = document.createElement('div');
-            otherSection.className = 'folder-section';
-            otherSection.innerHTML = `<div class="folder-title">📁 Другие папки</div><div class="gallery" id="other-folders"></div>`;
-            container.appendChild(otherSection);
-            
-            const otherGallery = document.getElementById('other-folders');
-            otherFolders.forEach(folder => {
-                const placeholder = document.createElement('div');
-                placeholder.className = 'skin-card';
-                placeholder.style.opacity = '0.6';
-                placeholder.innerHTML = `
-                    <div class="skin-preview">
-                        <img src="https://via.placeholder.com/150x150?text=📁" alt="folder">
-                    </div>
-                    <div class="skin-name">📁 ${folder.replace(/_/g, ' ')}<br><span style="font-size: 10px; color: #666;">(скоро)</span></div>
-                `;
-                otherGallery.appendChild(placeholder);
+    }
+
+    // --- Модальное окно ---
+    let currentModalUrl = '';
+    let currentModalName = '';
+
+    function openModal(url, name) {
+        currentModalUrl = url;
+        currentModalName = name;
+        const modal = document.getElementById('skinModal');
+        const modalImg = document.getElementById('modalImage');
+        const modalNameSpan = document.getElementById('modalSkinName');
+
+        modalImg.src = url;
+        modalNameSpan.textContent = name;
+        modal.classList.add('active');
+    }
+
+    function closeModal() {
+        const modal = document.getElementById('skinModal');
+        modal.classList.remove('active');
+        // небольшая задержка, чтобы сбросить src
+        setTimeout(() => {
+            document.getElementById('modalImage').src = '';
+        }, 200);
+    }
+
+    function copyUrl() {
+        if (currentModalUrl) {
+            navigator.clipboard.writeText(currentModalUrl).then(() => {
+                const btn = document.getElementById('copyUrlBtn');
+                const originalText = btn.textContent;
+                btn.textContent = 'Скопировано!';
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                }, 1800);
+            }).catch(() => {
+                alert('Не удалось скопировать URL');
             });
         }
-        
-        function openModal(url, name) {
-            currentSkinUrl = url;
-            currentSkinName = name;
-            const modal = document.getElementById('modal');
-            const modalImage = document.getElementById('modalImage');
-            const modalSkinName = document.getElementById('modalSkinName');
-            
-            modalImage.src = url;
-            modalSkinName.textContent = name.replace(/_/g, ' ');
-            modal.classList.add('active');
-        }
-        
-        function closeModal() {
-            document.getElementById('modal').classList.remove('active');
-        }
-        
-        function copyUrl() {
-            navigator.clipboard.writeText(currentSkinUrl);
-            alert('URL скопирован: ' + currentSkinUrl);
-        }
-        
-        function downloadSkin() {
+    }
+
+    function downloadSkin() {
+        if (currentModalUrl) {
             const link = document.createElement('a');
-            link.href = currentSkinUrl;
-            link.download = currentSkinName + '.png';
+            link.href = currentModalUrl;
+            // имя файла = имя скина .png
+            let filename = currentModalName + '.png';
+            link.download = filename;
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
         }
+    }
+
+    // Экранирование HTML
+    function escapeHtml(str) {
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        }).replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, function(c) {
+            return c;
+        });
+    }
+
+    // Навесить обработчики на кнопки модалки после загрузки DOM
+    document.addEventListener('DOMContentLoaded', () => {
+        render();
+        const copyBtn = document.getElementById('copyUrlBtn');
+        const downloadBtn = document.getElementById('downloadSkinBtn');
+        if (copyBtn) copyBtn.addEventListener('click', copyUrl);
+        if (downloadBtn) downloadBtn.addEventListener('click', downloadSkin);
         
         // Закрытие по Escape
         document.addEventListener('keydown', (e) => {
@@ -317,6 +404,7 @@
                 closeModal();
             }
         });
-    </script>
+    });
+</script>
 </body>
 </html>
