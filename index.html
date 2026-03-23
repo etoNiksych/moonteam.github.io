@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MoonTeam Галерея</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            background: #0a0a0a;
+            color: #e0e0e0;
+            padding: 40px 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+            border-left: 4px solid #ff4757;
+            padding-left: 20px;
+        }
+        
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+        
+        .gallery-item {
+            background: #1a1a1a;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+        }
+        
+        .gallery-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+        }
+        
+        .gallery-item img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            display: block;
+        }
+        
+        .gallery-item .title {
+            padding: 12px 15px;
+            font-weight: 500;
+            text-align: center;
+            background: #1e1e1e;
+        }
+        
+        /* Модальное окно для просмотра */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal img {
+            max-width: 90%;
+            max-height: 90%;
+            border-radius: 8px;
+        }
+        
+        .modal .copy-url {
+            position: absolute;
+            bottom: 30px;
+            background: #333;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .modal .copy-url:hover {
+            background: #ff4757;
+        }
+        
+        @media (max-width: 600px) {
+            h1 { font-size: 1.8rem; }
+            .gallery { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
+            .gallery-item img { height: 150px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Галерея</h1>
+        <div class="gallery" id="gallery"></div>
+    </div>
+    
+    <div class="modal" id="modal" onclick="closeModal()">
+        <img id="modalImage" src="" alt="">
+        <div class="copy-url" onclick="copyUrl(event)">Copy URL</div>
+    </div>
+
+    <script>
+        // Список изображений - замените на ваши файлы
+        const images = [
+            { name: "Additional Skins", file: "Additional_Skins.jpg" },
+            { name: "Additional Skins 2", file: "Additional_Skins2.jpg" },
+            { name: "Animals", file: "Animals.jpg" },
+            { name: "Dog sledding", file: "Dog_sledding.jpg" },
+            { name: "Genshin", file: "Genshin.jpg" },
+            { name: "Grandpa Loner", file: "Grandpa_Loner.jpg" },
+            { name: "Manyak", file: "Manyak.jpg" },
+            { name: "Nuckems", file: "Nuckems.jpg" },
+            { name: "Otec", file: "Otec.jpg" },
+            { name: "Pitbike", file: "Pitbike.jpg" },
+            { name: "Pitbike 2 Petya", file: "Pitbike2Petya.jpg" },
+            { name: "Poverty", file: "Poverty.jpg" },
+            { name: "Tank survival", file: "Tank_survival.jpg" },
+            { name: "The train with the hook", file: "The_train_with_the_hook.jpg" },
+            { name: "The unexpected President", file: "The_unexpected_President.jpg" },
+            { name: "Undead Hunters", file: "Undead_Hunters.jpg" },
+            { name: "Охотники 4k", file: "Охотники_4k.png" }
+        ];
+        
+        const gallery = document.getElementById('gallery');
+        const modal = document.getElementById('modal');
+        const modalImage = document.getElementById('modalImage');
+        
+        // Заполняем галерею
+        images.forEach(img => {
+            const item = document.createElement('div');
+            item.className = 'gallery-item';
+            item.onclick = () => openModal(img.file);
+            
+            // Используем placeholder, если изображения ещё не загружены
+            item.innerHTML = `
+                <img src="${img.file}" alt="${img.name}" onerror="this.src='https://via.placeholder.com/400x200?text=${encodeURIComponent(img.name)}'">
+                <div class="title">${img.name}</div>
+            `;
+            gallery.appendChild(item);
+        });
+        
+        function openModal(filename) {
+            const url = `https://moonteam.github.io/${filename}`;
+            modalImage.src = url;
+            modal.classList.add('active');
+            modal.setAttribute('data-url', url);
+        }
+        
+        function closeModal() {
+            modal.classList.remove('active');
+            modalImage.src = '';
+        }
+        
+        function copyUrl(event) {
+            event.stopPropagation();
+            const url = modal.getAttribute('data-url');
+            navigator.clipboard.writeText(url);
+            
+            const btn = event.target;
+            const originalText = btn.textContent;
+            btn.textContent = 'Copied!';
+            setTimeout(() => {
+                btn.textContent = originalText;
+            }, 2000);
+        }
+        
+        // Закрытие по Escape
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && modal.classList.contains('active')) {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>
